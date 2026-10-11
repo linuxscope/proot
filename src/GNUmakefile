@@ -8,15 +8,11 @@ SRC    = $(dir $(firstword $(MAKEFILE_LIST)))
 GIT      = git
 RM       = rm
 INSTALL  = install
-CC       ?= $(CROSS_COMPILE)gcc
-LD       = $(CC)
-STRIP    ?= $(CROSS_COMPILE)strip
-OBJCOPY  ?= $(CROSS_COMPILE)objcopy
-OBJDUMP  ?= $(CROSS_COMPILE)objdump
+include ndk.mk
 
-CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -I. -I$(VPATH)
-CFLAGS   += -Wall -Wextra -O2
-LDFLAGS  += -ltalloc -Wl,-z,noexecstack
+CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -I. -I$(VPATH) -Itinytalloc -static
+CFLAGS   += -Wall -Wextra -O2 -static
+LDFLAGS  += -Wl,-z,noexecstack -static
 ifdef PROOT_WITH_LIBANDROID_SHMEM
   CFLAGS += -DWITH_LIBANDROID_SHMEM
   LDFLAGS += -landroid-shmem
@@ -88,7 +84,8 @@ OBJECTS += \
 	extension/sysvipc/sysvipc_sem.o \
 	extension/sysvipc/sysvipc_shm.o \
 	extension/link2symlink/link2symlink.o \
-	extension/fix_symlink_size/fix_symlink_size.o
+	extension/fix_symlink_size/fix_symlink_size.o \
+	tinytalloc/talloc.o
 
 define define_from_arch.h
 $2$1 := $(shell $(CC) $1 -E -dM -DNO_LIBC_HEADER $(SRC)/arch.h | grep -w $2 | cut -f 3 -d ' ')

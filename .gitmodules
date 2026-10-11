@@ -1,0 +1,3 @@
+[submodule "src/tinytalloc"]
+	path = src/tinytalloc
+	url = https://github.com/linuxscope/tinytalloc
